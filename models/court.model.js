@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const CourtStatus= require("../enums/courtStatus");
 const courtSchema = new mongoose.Schema({
   name: {
     type: String, // eg; Court 1 , Court 2 etc...
@@ -10,8 +10,8 @@ const courtSchema = new mongoose.Schema({
   // hourlyRate: { type: Number, required: true }
   status: {
     type: String,
-    enum: ["available", "under-maintenance"],
-    default: "available",
+    enum: Object.values(CourtStatus),
+    default: CourtStatus.AVAILABLE,
   },
 });
 
