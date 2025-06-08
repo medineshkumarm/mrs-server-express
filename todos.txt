@@ -1,0 +1,19 @@
+//had to check ******
+  locked_timestamp: Date,
+*** customize the amount -====> to ADMIN PANEL
+
+// to book slots for next 2 days from the current day
+
+// before booking verify the mobile mobile_number with OTP
+// otp free service ****
+
+
+// booking route
+
+1. Make the slots isBooked = true in the booking response
+2. Methods to verify the amount , signature and other things
+
+
+
+
+
