@@ -13,6 +13,7 @@ const bookRoute = require("./routes/booking.routes");
 const courtAdminRoute = require("./routes/admin/court.routes");
 const slotAdminRoute = require("./routes/admin/slot.routes");
 const userAdminRoute = require("./routes/admin/user.routes");
+const bookingAdminRoute = require("./routes/admin/booking.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
 
@@ -40,6 +41,7 @@ app.use("/api/v1/book", bookRoute);
 app.use("/api/v1/admin/court", courtAdminRoute);
 app.use("/api/v1/admin/slot", slotAdminRoute);
 app.use("/api/v1/admin/user", userAdminRoute);
+app.use("/api/v1/admin/booking",bookingAdminRoute );
 
 // app.use("/api/v1/admin", adminRoute);
 

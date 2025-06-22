@@ -3,6 +3,15 @@ const router = express.Router();
 const { authorize, permit } = require("../../middlewares/auth.middleware");
 const courtManagementController = require("../../controllers/admin/court.controller");
 
+
+// Get all courts.
+router.post(
+  "/",
+  authorize,
+  permit("admin", "superAdmin"),
+  courtManagementController.createCourt
+);
+
 // Get all courts.
 router.get(
   "/",
