@@ -1,0 +1,265 @@
+auth routes:
+
+/api/v1/auth/register
+/api/v1/auth/login
+
+(protected routes)
+/api/v1/auth/getUser
+/api/v1/auth/forgot-password
+/api/v1/auth/reset-password
+
+
+todos: Create Logic to verify mobile no with OTP (use Message central API for SMS)
+
+======================================================================
+
+#### SLOT ROUTES:
+{{localhost}} = http://localhost:8000
+((protected routes with bearer jwt auth))
+1. Endpoint(GET): {{localhost}}/api/v1/slot/slots-by-date?date=2025-06-05
+description: Get Available Slots for all courts
+    Response:
+    {
+    "success": true,
+    "message": "Available slots for all courts on 2025-06-05",
+    "data": {
+        "date": "2025-06-05",
+        "availableSlots": [
+            {
+                "_id": "68411f4b4db7d93e23e4c21c",
+                "courtId": {
+                    "_id": "68401ee60d98dd7f7ca171a7",
+                    "name": "court-4",
+                    "status": "available",
+                    "__v": 0
+                },
+                "startTime": "2025-06-05T07:00:00.000Z",
+                "endTime": "2025-06-05T07:30:00.000Z",
+                "isBooked": false,
+                "__v": 0
+            },
+            {
+                "_id": "68411f4b4db7d93e23e4c21e",
+                "courtId": {
+                    "_id": "68401ee60d98dd7f7ca171a7",
+                    "name": "court-4",
+                    "status": "available",
+                    "__v": 0
+                },
+                "startTime": "2025-06-05T08:00:00.000Z",
+                "endTime": "2025-06-05T08:30:00.000Z",
+                "isBooked": false,
+                "__v": 0
+            },
+          
+        ]
+    },
+    "error": null
+}
+
+2. Endpoint(GET): {{localhost}}/api/v1/slot/slots-by-date/68401ee60d98dd7f7ca171a7?date=2025-06-05
+    description: Get Available Slots by CourtId by date
+    Response:
+    {
+        "success": true,
+        "message": "Available slots for court 68401ee60d98dd7f7ca171a7 on 2025-06-05",
+        "data": {
+            "date": "2025-06-05",
+            "courtId": "68401ee60d98dd7f7ca171a7",
+            "availableSlots": [
+                {
+                    "_id": "68411f4b4db7d93e23e4c21c",
+                    "courtId": {
+                        "_id": "68401ee60d98dd7f7ca171a7",
+                        "name": "court-4",
+                        "status": "available",
+                        "__v": 0
+                    },
+                    "startTime": "2025-06-05T07:00:00.000Z",
+                    "endTime": "2025-06-05T07:30:00.000Z",
+                    "isBooked": false,
+                    "__v": 0
+                },
+            ]
+            },
+        "error": null
+    }
+    
+### BOOKING ROUTES:
+(protected routes)
+1. Endpoint(POST):{{localhost}}/api/v1/book/bookings
+
+    Request:
+    {
+  "userId": "68401e710d98dd7f7ca1719e",
+  "courtId": "68401ee60d98dd7f7ca171a7",
+  "slotIds": [
+    "68411f4b4db7d93e23e4c21c"
+  ],
+  "totalDuration": 60,
+  "totalAmount": 500
+}
+
+Response:
+{
+    "success": true,
+    "message": "Booking created and Razorpay order initialized",
+    "data": {
+        "id": "6841a30feaffdc24311a4ca0",
+        "booking": {
+            "userId": "68401e710d98dd7f7ca1719e",
+            "courtId": "68401ee60d98dd7f7ca171a7",
+            "slots": [
+                {
+                    "_id": "68411f4b4db7d93e23e4c21c",
+                    "courtId": "68401ee60d98dd7f7ca171a7",
+                    "startTime": "2025-06-05T07:00:00.000Z",
+                    "endTime": "2025-06-05T07:30:00.000Z",
+                    "isBooked": false,
+                    "__v": 0
+                }
+            ],
+            "totalDuration": 60,
+            "totalAmount": 500,
+            "paymentStatus": "pending",
+            "status": "confirmed",
+            "_id": "6841a30feaffdc24311a4ca0",
+            "createdAt": "2025-06-05T14:00:47.408Z",
+            "updatedAt": "2025-06-05T14:00:49.205Z",
+            "__v": 0,
+            "razorpayOrderId": "order_QdXXsHQ2RMx7id"
+        },
+        "razorpayOrderId": "order_QdXXsHQ2RMx7id"
+    },
+    "error": null
+}
+
+2. Endpoint(POST) : {{localhost}}/api/v1/book/verify-payment 
+description: verify payment
+Request: 
+{
+    "razorpay_order_id": "order_QdXXsHQ2RMx7id",
+    "razorpay_payment_id": "some_id",
+    "razorpay_signature": "signature",
+    "bookingId": "6841a30feaffdc24311a4ca0",
+    "status": "paid"
+}
+Response:
+{
+    "success": true,
+    "message": "Payment verified and booking updated",
+    "data": {
+        "updatedBooking": {
+            "_id": "6841a30feaffdc24311a4ca0",
+            "userId": "68401e710d98dd7f7ca1719e",
+            "courtId": "68401ee60d98dd7f7ca171a7",
+            "slots": [
+                "68411f4b4db7d93e23e4c21c"
+            ],
+            "totalDuration": 60,
+            "totalAmount": 500,
+            "paymentStatus": "paid",
+            "status": "confirmed",
+            "createdAt": "2025-06-05T14:00:47.408Z",
+            "updatedAt": "2025-06-05T14:01:34.069Z",
+            "__v": 0,
+            "razorpayOrderId": "order_QdXXsHQ2RMx7id",
+            "razorpayPaymentId": "some_id",
+            "razorpaySignature": "signature"
+        }
+    },
+    "error": null
+}
+
+## AUTH ROUTES:
+((protected))
+1. Get UserInfo:
+
+Endpoint(GET) : {{localhost}}/api/v1/auth/getUser
+
+Response: {
+    "user": {
+        "_id": "68401e710d98dd7f7ca1719e",
+        "name": "tony",
+        "email": "tony@gmail.com",
+        "mobile_number": "9941585129",
+        "membership_status": "none",
+        "role": "user",
+        "profileImageUrl": "",
+        "createdAt": "2025-06-04T10:22:41.801Z",
+        "updatedAt": "2025-06-04T10:22:41.801Z",
+        "__v": 0
+    }
+}
+
+2. Get User booking:
+Endpoint(GET) : {{localhost}}/api/v1/book/bookings/user
+
+Response:{
+    "success": true,
+    "message": "Fetched user bookings successfully",
+    "data": {
+        "bookings": [
+            {
+                "_id": "6841d0c752d8cec15a496e2d",
+                "userId": "68401e710d98dd7f7ca1719e",
+                "courtId": {
+                    "_id": "68401ee60d98dd7f7ca171a7",
+                    "name": "court-4",
+                    "status": "available",
+                    "__v": 0
+                },
+                "slots": [],
+                "totalDuration": 60,
+                "totalAmount": 500,
+                "paymentStatus": "paid",
+                "status": "confirmed",
+                "createdAt": "2025-06-05T17:15:51.548Z",
+                "updatedAt": "2025-06-05T17:17:24.971Z",
+                "__v": 0,
+                "razorpayOrderId": "order_QdarucxSo9ADX3",
+                "razorpayPaymentId": "some_id",
+                "razorpaySignature": "signature"
+            },
+            {
+                "_id": "6841e50962b0fcd509709674",
+                "userId": "68401e710d98dd7f7ca1719e",
+                "courtId": {
+                    "_id": "68401ee60d98dd7f7ca171a7",
+                    "name": "court-4",
+                    "status": "available",
+                    "__v": 0
+                },
+                "slots": [
+                    {
+                        "_id": "6841e4dcc8186b2d77f51a00",
+                        "courtId": "68401ee60d98dd7f7ca171a7",
+                        "startTime": "2025-06-06T00:30:00.000Z",
+                        "endTime": "2025-06-06T01:00:00.000Z",
+                        "isBooked": true,
+                        "__v": 0
+                    },
+                    {
+                        "_id": "6841e4dcc8186b2d77f51a01",
+                        "courtId": "68401ee60d98dd7f7ca171a7",
+                        "startTime": "2025-06-06T01:00:00.000Z",
+                        "endTime": "2025-06-06T01:30:00.000Z",
+                        "isBooked": true,
+                        "__v": 0
+                    }
+                ],
+                "totalDuration": 60,
+                "totalAmount": 200,
+                "paymentStatus": "paid",
+                "status": "confirmed",
+                "createdAt": "2025-06-05T18:42:17.532Z",
+                "updatedAt": "2025-06-05T18:43:10.861Z",
+                "__v": 0,
+                "razorpayOrderId": "order_QdcLDJYPMnXQ6N",
+                "razorpayPaymentId": "pay_QdcLn8sMEKgJAx",
+                "razorpaySignature": "09b6f0db1e7c9fad385e7b71141e4abbf13b968c62bb8183602f3745a9598b1c"
+            }
+        ]
+    },
+    "error": null
+}
