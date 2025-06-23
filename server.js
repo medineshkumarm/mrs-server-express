@@ -16,6 +16,7 @@ const userAdminRoute = require("./routes/admin/user.routes");
 const bookingAdminRoute = require("./routes/admin/booking.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
+//branch test
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
