@@ -16,6 +16,7 @@ const userAdminRoute = require("./routes/admin/user.routes");
 const bookingAdminRoute = require("./routes/admin/booking.routes");
 
 const errorMiddleware = require("./middlewares/error.middleware");
+const { scheduleSlotGeneration } = require("./services/cron/slotGenerator");
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -41,7 +42,7 @@ app.use("/api/v1/book", bookRoute);
 app.use("/api/v1/admin/court", courtAdminRoute);
 app.use("/api/v1/admin/slot", slotAdminRoute);
 app.use("/api/v1/admin/user", userAdminRoute);
-app.use("/api/v1/admin/booking",bookingAdminRoute );
+app.use("/api/v1/admin/booking", bookingAdminRoute);
 
 // app.use("/api/v1/admin", adminRoute);
 
@@ -52,12 +53,12 @@ app.use(errorMiddleware);
  */
 require("./util/scheduler"); // This will start the cron job
 
-
 app.listen(PORT, async () => {
   console.log(`Server running on port http://localhost:${PORT}`);
- try {
-   await connectDB();
- } catch (error) {
-  consol.error("db not connected");
- }
+  try {
+    await connectDB();
+    scheduleSlotGeneration();
+  } catch (error) {
+    console.error("db not connected");
+  }
 });
